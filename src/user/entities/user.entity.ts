@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinTable,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -22,7 +23,10 @@ export class User {
   @Column()
   phoneNumber: string;
 
-  @ManyToOne(() => Role, (role: Role) => role.users)
+  @JoinTable()
+  @ManyToOne(() => Role, (role: Role) => role.users, {
+    cascade: true,
+  })
   role: Role;
 
   @OneToMany(() => Order, (order: Order) => order.user)

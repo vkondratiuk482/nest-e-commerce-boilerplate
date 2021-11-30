@@ -15,8 +15,11 @@ export class Product {
   @Column()
   weight: string;
 
-  @Column()
-  price: string;
+  @Column('decimal', {
+    precision: 8,
+    scale: 2,
+  })
+  price: number;
 
   @Column()
   photo: string;
