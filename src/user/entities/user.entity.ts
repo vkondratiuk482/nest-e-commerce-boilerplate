@@ -14,13 +14,13 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ length: 25 })
   name: string;
 
-  @Column()
+  @Column({ length: 25 })
   surname: string;
 
-  @Column()
+  @Column({ length: 10 })
   phoneNumber: string;
 
   @JoinTable()

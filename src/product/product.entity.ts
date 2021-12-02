@@ -3,16 +3,16 @@ import { Order } from '../order/order.entity';
 
 @Entity()
 export class Product {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ length: 50 })
   name: string;
 
-  @Column()
+  @Column({ length: 50 })
   vendorCode: string;
 
-  @Column()
+  @Column({ length: 10 })
   weight: string;
 
   @Column('decimal', {
@@ -24,7 +24,7 @@ export class Product {
   @Column()
   photo: string;
 
-  @Column()
+  @Column({ length: 255 })
   description: string;
 
   @Column()

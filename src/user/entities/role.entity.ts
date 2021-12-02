@@ -14,7 +14,7 @@ export class Role {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ length: 25 })
   name: string;
 
   @OneToMany(() => User, (user: User) => user.role)
