@@ -18,7 +18,7 @@ import { ProductModule } from './product/product.module';
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
     }),
     UserModule,
     OrderModule,
