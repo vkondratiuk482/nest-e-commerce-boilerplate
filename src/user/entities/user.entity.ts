@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Order } from '../../order/order.entity';
-import { Role } from './role.entity';
+import { Role } from '../../role/role.entity';
 
 @Entity()
 export class User {
@@ -24,9 +24,7 @@ export class User {
   phoneNumber: string;
 
   @JoinTable()
-  @ManyToOne(() => Role, (role: Role) => role.users, {
-    cascade: true,
-  })
+  @ManyToOne(() => Role, (role: Role) => role.users)
   role: Role;
 
   @OneToMany(() => Order, (order: Order) => order.user)

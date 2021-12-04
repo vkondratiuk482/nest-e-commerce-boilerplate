@@ -7,7 +7,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Permission } from './permission.entity';
+import { Permission } from '../user/entities/permission.entity';
 
 @Entity()
 export class Role {

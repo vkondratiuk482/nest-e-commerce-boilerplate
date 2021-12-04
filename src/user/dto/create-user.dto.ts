@@ -11,5 +11,5 @@ export class CreateUserDto {
   readonly phoneNumber: string;
 
   @IsString()
-  readonly roleId: string;
+  readonly roleName: string;
 }
