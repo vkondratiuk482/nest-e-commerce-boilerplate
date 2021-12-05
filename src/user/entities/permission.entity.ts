@@ -3,13 +3,13 @@ import { Role } from './role.entity';
 
 @Entity()
 export class Permission {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ length: 25 })
   name: string;
 
-  @Column()
+  @Column({ length: 100 })
   description: string;
 
   @ManyToMany(() => Role, (role) => role.permissions)

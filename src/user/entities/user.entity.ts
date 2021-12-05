@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinTable,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -13,16 +14,19 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ length: 25 })
   name: string;
 
-  @Column()
+  @Column({ length: 25 })
   surname: string;
 
-  @Column()
+  @Column({ length: 10 })
   phoneNumber: string;
 
-  @ManyToOne(() => Role, (role: Role) => role.users)
+  @JoinTable()
+  @ManyToOne(() => Role, (role: Role) => role.users, {
+    cascade: true,
+  })
   role: Role;
 
   @OneToMany(() => Order, (order: Order) => order.user)

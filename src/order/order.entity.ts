@@ -11,16 +11,19 @@ import { Product } from '../product/product.entity';
 
 @Entity()
 export class Order {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ length: 50 })
   adress: string;
 
-  @Column()
-  price: string;
+  @Column('decimal', {
+    precision: 8,
+    scale: 2,
+  })
+  price: number;
 
-  @Column()
+  @Column({ length: 25 })
   date: string;
 
   @ManyToOne(() => User, (user: User) => user.orders)
