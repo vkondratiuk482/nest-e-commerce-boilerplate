@@ -8,6 +8,12 @@ export class CreateUserDto {
   readonly surname: string;
 
   @IsString()
+  readonly email: string;
+
+  @IsString()
+  readonly password: string;
+
+  @IsString()
   readonly phoneNumber: string;
 
   @IsString()

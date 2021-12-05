@@ -34,6 +34,17 @@ export class UserService {
     return user;
   }
 
+  async findOneByEmail(email: string) {
+    const user = await this.userRepository.findOne(
+      { email },
+      {
+        relations: ['role'],
+      },
+    );
+
+    return user;
+  }
+
   async create(createUserDto: CreateUserDto) {
     const id = uuidv4();
     const role = await this.roleService.findOneByName(createUserDto.roleName);
