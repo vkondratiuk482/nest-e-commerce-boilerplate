@@ -58,6 +58,15 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
+  async setRefreshToken(id: string, refreshToken: string) {
+    const user = await this.findOne(id);
+
+    return this.userRepository.save({
+      ...user,
+      refreshToken,
+    });
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) {
     const role =
       updateUserDto.roleName &&

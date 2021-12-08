@@ -29,6 +29,9 @@ export class User {
   @Column({ length: 10 })
   phoneNumber: string;
 
+  @Column({ nullable: true })
+  refreshToken: string;
+
   @JoinTable()
   @ManyToOne(() => Role, (role: Role) => role.users)
   role: Role;

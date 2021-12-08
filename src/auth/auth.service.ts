@@ -44,12 +44,22 @@ export class AuthService {
     return this.generateToken(user);
   }
 
-  private generateToken(user: User) {
+  private async generateToken(user: User) {
     const payload = { email: user.email, id: user.id, roles: user.role };
 
-    const token = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_ACCESS_SECRET,
+      expiresIn: '30m',
+    });
 
-    return { token };
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: '30d',
+    });
+
+    await this.userService.setRefreshToken(user.id, refreshToken);
+
+    return { accessToken, refreshToken };
   }
 
   private async validateUser(userDto: LoginUserDto) {
