@@ -25,6 +25,16 @@ export class AuthService {
     return this.generateToken(user);
   }
 
+  async logout(refreshToken) {
+    try {
+      const decodedUser = await this.jwtService.verify(refreshToken, {
+        secret: process.env.JWT_REFRESH_SECRET,
+      });
+
+      return this.userService.removeToken(decodedUser.id);
+    } catch (e) {}
+  }
+
   async registration(userDto: CreateUserDto) {
     const candidate = await this.userService.findOneByEmail(userDto.email);
 
@@ -60,6 +70,25 @@ export class AuthService {
     await this.userService.setRefreshToken(user.id, refreshToken);
 
     return { accessToken, refreshToken };
+  }
+
+  private async isRefreshTokenValid(refreshToken: string) {
+    try {
+      const decodedUser = await this.jwtService.verify(refreshToken, {
+        secret: process.env.JWT_REFRESH_SECRET,
+      });
+      const storedToken = await this.userService.getRefreshToken(
+        decodedUser.id,
+      );
+
+      if (refreshToken === storedToken) {
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      return false;
+    }
   }
 
   private async validateUser(userDto: LoginUserDto) {
