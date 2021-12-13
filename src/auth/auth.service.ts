@@ -7,31 +7,28 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { UserService } from '../user/user.service';
-import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../user/dto/create-user.dto';
-import { User } from 'src/user/entities/user.entity';
 import { LoginUserDto } from '../user/dto/login-user.dto';
+import { TokenService } from '../token/token.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
-    private readonly jwtService: JwtService,
+    private readonly tokenService: TokenService,
   ) {}
 
   async login(userDto: LoginUserDto) {
     const user = await this.validateUser(userDto);
 
-    return this.generateToken(user);
+    return this.tokenService.generateTokens(user);
   }
 
   async logout(refreshToken) {
     try {
-      const decodedUser = await this.jwtService.verify(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET,
-      });
+      const user = await this.tokenService.verifyRefreshToken(refreshToken);
 
-      return this.userService.removeToken(decodedUser.id);
+      return this.tokenService.removeRefreshToken(user?.id);
     } catch (e) {}
   }
 
@@ -51,44 +48,7 @@ export class AuthService {
       password: hashedPassword,
     });
 
-    return this.generateToken(user);
-  }
-
-  private async generateToken(user: User) {
-    const payload = { email: user.email, id: user.id, roles: user.role };
-
-    const accessToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_ACCESS_SECRET,
-      expiresIn: '30m',
-    });
-
-    const refreshToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_REFRESH_SECRET,
-      expiresIn: '30d',
-    });
-
-    await this.userService.setRefreshToken(user.id, refreshToken);
-
-    return { accessToken, refreshToken };
-  }
-
-  private async isRefreshTokenValid(refreshToken: string) {
-    try {
-      const decodedUser = await this.jwtService.verify(refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET,
-      });
-      const storedToken = await this.userService.getRefreshToken(
-        decodedUser.id,
-      );
-
-      if (refreshToken === storedToken) {
-        return true;
-      }
-
-      return false;
-    } catch (e) {
-      return false;
-    }
+    return this.tokenService.generateTokens(user);
   }
 
   private async validateUser(userDto: LoginUserDto) {
