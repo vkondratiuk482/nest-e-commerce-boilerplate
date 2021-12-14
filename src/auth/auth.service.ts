@@ -65,10 +65,10 @@ export class AuthService {
       user.password,
     );
 
-    if (user && passwordEquals) {
+    if (passwordEquals) {
       return user;
     }
 
-    throw new UnauthorizedException({ message: 'Incorrect email or password' });
+    throw new UnauthorizedException({ message: 'Incorrect password' });
   }
 }

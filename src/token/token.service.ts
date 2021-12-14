@@ -39,9 +39,17 @@ export class TokenService {
     });
   }
 
-  async verifyRefreshToken(refreshToken: string) {
-    const decodedUser = await this.jwtService.verify(refreshToken, {
+  verifyRefreshToken(refreshToken: string) {
+    const decodedUser = this.jwtService.verify(refreshToken, {
       secret: process.env.JWT_REFRESH_SECRET,
+    });
+
+    return decodedUser;
+  }
+
+  verifyAccessToken(accessToken: string) {
+    const decodedUser = this.jwtService.verify(accessToken, {
+      secret: process.env.JWT_ACCESS_SECRET,
     });
 
     return decodedUser;
