@@ -7,14 +7,14 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Permission } from './permission.entity';
+import { Permission } from '../user/entities/permission.entity';
 
 @Entity()
 export class Role {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ length: 25 })
   name: string;
 
   @OneToMany(() => User, (user: User) => user.role)

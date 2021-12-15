@@ -1,27 +1,38 @@
 import {
   Column,
   Entity,
+  JoinTable,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Order } from '../../order/order.entity';
-import { Role } from './role.entity';
+import { Role } from '../../role/role.entity';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ length: 25 })
   name: string;
 
-  @Column()
+  @Column({ length: 25 })
   surname: string;
 
-  @Column()
+  @Column({ length: 50 })
+  email: string;
+
+  @Column({ length: 60 })
+  password: string;
+
+  @Column({ length: 10 })
   phoneNumber: string;
 
+  @Column({ nullable: true })
+  refreshToken: string;
+
+  @JoinTable()
   @ManyToOne(() => Role, (role: Role) => role.users)
   role: Role;
 
