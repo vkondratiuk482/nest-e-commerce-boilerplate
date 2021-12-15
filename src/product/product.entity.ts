@@ -30,6 +30,9 @@ export class Product {
   @Column()
   size: string;
 
+  @Column({ length: 50 })
+  category: string;
+
   @ManyToMany(() => Order, (order: Order) => order.products)
   orders: Order[];
 }
