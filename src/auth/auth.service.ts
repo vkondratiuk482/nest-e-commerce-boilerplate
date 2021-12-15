@@ -19,16 +19,16 @@ export class AuthService {
   ) {}
 
   async login(userDto: LoginUserDto) {
-    const user = await this.validateUser(userDto);
+    const { id } = await this.validateUser(userDto);
 
-    return this.tokenService.generateTokens(user);
+    return this.tokenService.generateTokens(id);
   }
 
   async logout(refreshToken) {
     try {
-      const user = await this.tokenService.verifyRefreshToken(refreshToken);
+      const { id } = await this.tokenService.verifyRefreshToken(refreshToken);
 
-      return this.tokenService.removeRefreshToken(user?.id);
+      return this.tokenService.removeRefreshToken(id);
     } catch (e) {}
   }
 
@@ -48,7 +48,19 @@ export class AuthService {
       password: hashedPassword,
     });
 
-    return this.tokenService.generateTokens(user);
+    return this.tokenService.generateTokens(user.id);
+  }
+
+  async updateRefreshToken(refreshToken: string) {
+    //check the validness of the refresh token
+    //generate new token
+    //set new refresh token in database
+    //put new refresh token in cookies
+    const id = await this.tokenService.isRefreshTokenValid(refreshToken);
+
+    const tokens = await this.tokenService.generateTokens(id);
+
+    return tokens;
   }
 
   private async validateUser(userDto: LoginUserDto) {

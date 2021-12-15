@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
@@ -40,23 +40,23 @@ export class TokenService {
   }
 
   verifyRefreshToken(refreshToken: string) {
-    const decodedUser = this.jwtService.verify(refreshToken, {
+    const decodedId = this.jwtService.verify(refreshToken, {
       secret: process.env.JWT_REFRESH_SECRET,
     });
 
-    return decodedUser;
+    return decodedId;
   }
 
   verifyAccessToken(accessToken: string) {
-    const decodedUser = this.jwtService.verify(accessToken, {
+    const decodedId = this.jwtService.verify(accessToken, {
       secret: process.env.JWT_ACCESS_SECRET,
     });
 
-    return decodedUser;
+    return decodedId;
   }
 
-  async generateTokens(user: User) {
-    const payload = { email: user.email, id: user.id, roles: user.role };
+  async generateTokens(id: string) {
+    const payload = { id };
 
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_ACCESS_SECRET,
@@ -68,23 +68,21 @@ export class TokenService {
       expiresIn: '30d',
     });
 
-    await this.setRefreshToken(user.id, refreshToken);
+    await this.setRefreshToken(id, refreshToken);
 
     return { accessToken, refreshToken };
   }
 
-  private async isRefreshTokenValid(refreshToken: string) {
+  async isRefreshTokenValid(refreshToken: string) {
     try {
-      const user = await this.verifyRefreshToken(refreshToken);
-      const storedToken = await this.getRefreshToken(user?.id);
+      const { id } = await this.verifyRefreshToken(refreshToken);
+      const storedToken = await this.getRefreshToken(id);
 
       if (refreshToken === storedToken) {
-        return true;
+        return id;
       }
-
-      return false;
     } catch (e) {
-      return false;
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
   }
 }

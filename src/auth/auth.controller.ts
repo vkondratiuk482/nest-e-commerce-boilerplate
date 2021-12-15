@@ -52,4 +52,21 @@ export class AuthController {
 
     return result;
   }
+
+  @Post('/update')
+  async updateRefreshToken(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { refreshToken } = req.cookies;
+
+    const tokens = await this.authService.updateRefreshToken(refreshToken);
+
+    res.cookie('refreshToken', tokens.refreshToken, {
+      httpOnly: true,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    return tokens;
+  }
 }
