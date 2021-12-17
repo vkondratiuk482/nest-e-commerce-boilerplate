@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Product } from './product.entity';
 import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateUserDto } from '../user/dto/update-user.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductService {
@@ -19,8 +19,16 @@ export class ProductService {
     return products;
   }
 
-  async findAllByCategoty(category: string) {
+  async findAllByCategory(category: string) {
     const products = await this.productRepository.findOne({ category });
+
+    return products;
+  }
+
+  async findManyByIds(arrayOfIds: Array<string>) {
+    const products = await Promise.all(
+      arrayOfIds.map(async (id) => this.findOne(id)),
+    );
 
     return products;
   }
@@ -46,10 +54,10 @@ export class ProductService {
     return this.productRepository.save(product);
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateProductDto: UpdateProductDto) {
     const product = await this.productRepository.preload({
       id,
-      ...updateUserDto,
+      ...updateProductDto,
     });
 
     if (!product) {

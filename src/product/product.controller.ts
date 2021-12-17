@@ -14,12 +14,6 @@ import { UpdateProductDto } from './dto/update-product.dto';
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
-  //GET all products
-  //GET all products of certain category
-  //GET one product by id
-  //POST one product
-  //PATCH one product
-  //DELETE one product
 
   @Get()
   async findAll() {
@@ -28,7 +22,7 @@ export class ProductController {
 
   @Get('category/:category')
   async findAllByCategory(@Param('category') category: string) {
-    return this.productService.findAllByCategoty(category);
+    return this.productService.findAllByCategory(category);
   }
 
   @Get(':id')
