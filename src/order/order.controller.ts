@@ -6,15 +6,20 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { Role } from 'src/role/decorators/role.decorator';
+import { RoleGuard } from 'src/role/guards/role.guard';
 
 @Controller('order')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
+  @Role('admin')
+  @UseGuards(RoleGuard)
   @Get()
   async findAll() {
     return this.orderService.findAll();
