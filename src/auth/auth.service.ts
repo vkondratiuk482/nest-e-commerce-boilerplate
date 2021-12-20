@@ -52,15 +52,24 @@ export class AuthService {
   }
 
   async updateRefreshToken(refreshToken: string) {
-    //check the validness of the refresh token
-    //generate new token
-    //set new refresh token in database
-    //put new refresh token in cookies
     const id = await this.tokenService.isRefreshTokenValid(refreshToken);
 
     const tokens = await this.tokenService.generateTokens(id);
 
     return tokens;
+  }
+
+  async parseAuthorizationHeaders(authHeaders: string) {
+    const tokenType = authHeaders.split(' ')[0];
+    const token = authHeaders.split(' ')[1];
+
+    if (!token || tokenType !== 'Bearer') {
+      throw new UnauthorizedException('Incorrect auth headers');
+    }
+
+    const payload = this.tokenService.verifyAccessToken(token);
+
+    return payload;
   }
 
   private async validateUser(userDto: LoginUserDto) {

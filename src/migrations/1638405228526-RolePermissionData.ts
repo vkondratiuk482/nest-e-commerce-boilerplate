@@ -7,7 +7,7 @@ export class RolePermissionData1638405228526 implements MigrationInterface {
       SELECT Role.id, Permission.id
       FROM Role, Permission
       WHERE Role.name = 'admin'
-      AND Permission.name LIKE '%All%';
+      AND Permission.name LIKE '%ALL%';
     `);
 
     await queryRunner.query(
@@ -15,7 +15,7 @@ export class RolePermissionData1638405228526 implements MigrationInterface {
       SELECT Role.id, Permission.id
       FROM Role, Permission
       WHERE Role.name = 'user'
-      AND Permission.name LIKE '%Self%';`,
+      AND Permission.name LIKE '%SELF%';`,
     );
   }
 

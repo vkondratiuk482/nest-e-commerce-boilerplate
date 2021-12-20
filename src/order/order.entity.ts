@@ -26,6 +26,9 @@ export class Order {
   @Column({ length: 25 })
   date: string;
 
+  @Column({ length: 50 })
+  status: string;
+
   @ManyToOne(() => User, (user: User) => user.orders)
   user: User;
 
