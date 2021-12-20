@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateOrderDto {
   @IsString()
@@ -13,6 +13,7 @@ export class CreateOrderDto {
   @IsString()
   readonly status: string;
 
+  @IsOptional()
   @IsString()
-  readonly userId: string;
+  userId?: string;
 }

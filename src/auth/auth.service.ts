@@ -59,6 +59,19 @@ export class AuthService {
     return tokens;
   }
 
+  async parseAuthorizationHeaders(authHeaders: string) {
+    const tokenType = authHeaders.split(' ')[0];
+    const token = authHeaders.split(' ')[1];
+
+    if (!token || tokenType !== 'Bearer') {
+      throw new UnauthorizedException('Incorrect auth headers');
+    }
+
+    const payload = this.tokenService.verifyAccessToken(token);
+
+    return payload;
+  }
+
   private async validateUser(userDto: LoginUserDto) {
     const user = await this.userService.findOneByEmail(userDto.email);
 
