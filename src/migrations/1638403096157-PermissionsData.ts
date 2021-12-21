@@ -22,6 +22,10 @@ export class PermissionsData1638403096157 implements MigrationInterface {
     await queryRunner.query(
       `INSERT INTO Permission VALUES('${uuidv4()}', 'GET_ORDER_ALL', 'get any order of any user')`,
     );
+
+    await queryRunner.query(
+      `INSERT INTO Permission VALUES('${uuidv4()}', 'CRUD_PRODUCT_ALL', 'crud functionality for products')`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
