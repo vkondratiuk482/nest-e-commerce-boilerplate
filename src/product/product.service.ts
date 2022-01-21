@@ -26,9 +26,10 @@ export class ProductService {
   }
 
   async findManyByIds(arrayOfIds: Array<string>) {
-    const products = await Promise.all(
-      arrayOfIds.map(async (id) => this.findOne(id)),
-    );
+    const products = await this.productRepository
+      .createQueryBuilder()
+      .where('id IN(:...arrayOfIds)', { arrayOfIds })
+      .getMany();
 
     return products;
   }
