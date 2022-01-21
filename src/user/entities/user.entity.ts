@@ -6,6 +6,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
 import { Order } from '../../order/order.entity';
 import { Role } from '../../role/role.entity';
 

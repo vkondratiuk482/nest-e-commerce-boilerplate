@@ -8,11 +8,15 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ProductService } from './product.service';
+
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+
 import { Permission } from 'src/role/decorators/permission.decorator';
+
 import { PermissionGuard } from 'src/role/guards/permission.guard';
+
+import { ProductService } from './product.service';
 
 @Controller('product')
 export class ProductController {

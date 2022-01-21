@@ -6,6 +6,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
 import { User } from '../user/entities/user.entity';
 import { Product } from '../product/product.entity';
 

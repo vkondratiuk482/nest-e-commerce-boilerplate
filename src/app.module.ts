@@ -1,6 +1,7 @@
 import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { UserModule } from './user/user.module';
 import { OrderModule } from './order/order.module';
 import { ProductModule } from './product/product.module';

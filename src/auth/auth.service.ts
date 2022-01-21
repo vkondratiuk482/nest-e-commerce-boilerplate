@@ -3,10 +3,13 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+
 import * as bcrypt from 'bcryptjs';
-import { UserService } from '../user/user.service';
+
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoginUserDto } from '../user/dto/login-user.dto';
+
+import { UserService } from '../user/user.service';
 import { TokenService } from '../token/token.service';
 
 @Injectable()

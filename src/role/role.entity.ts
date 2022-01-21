@@ -1,4 +1,3 @@
-import { User } from 'src/user/entities/user.entity';
 import {
   Column,
   Entity,
@@ -7,6 +6,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+
+import { User } from 'src/user/entities/user.entity';
 import { Permission } from '../user/entities/permission.entity';
 
 @Entity()

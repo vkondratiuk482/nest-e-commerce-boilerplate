@@ -9,13 +9,18 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { OrderService } from './order.service';
+
+import { Request } from 'express';
+
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { PermissionGuard } from 'src/role/guards/permission.guard';
+
 import { Permission } from 'src/role/decorators/permission.decorator';
-import { Request } from 'express';
+
+import { PermissionGuard } from 'src/role/guards/permission.guard';
+
 import { AuthService } from 'src/auth/auth.service';
+import { OrderService } from './order.service';
 
 @Controller('order')
 export class OrderController {
