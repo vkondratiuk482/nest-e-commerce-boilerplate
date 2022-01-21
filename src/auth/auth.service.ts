@@ -44,12 +44,12 @@ export class AuthService {
     return this.tokenService.generateTokens(user.id);
   }
 
-  async updateRefreshToken(refreshToken: string) {
+  async updateAccessToken(refreshToken: string) {
     const id = await this.tokenService.isRefreshTokenValid(refreshToken);
 
-    const tokens = await this.tokenService.generateTokens(id);
+    const { accessToken } = await this.tokenService.generateTokens(id);
 
-    return tokens;
+    return accessToken;
   }
 
   async parseAuthorizationHeaders(authHeaders: string) {
