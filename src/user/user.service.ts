@@ -46,11 +46,9 @@ export class UserService {
   }
 
   async create(createUserDto: CreateUserDto) {
-    const id = uuidv4();
     const role = await this.roleService.findOneByName(createUserDto.roleName);
 
     const user = await this.userRepository.create({
-      id,
       ...createUserDto,
       role,
     });

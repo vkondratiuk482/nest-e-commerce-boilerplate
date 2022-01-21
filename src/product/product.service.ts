@@ -45,12 +45,7 @@ export class ProductService {
   }
 
   async create(createProductDto: CreateProductDto) {
-    const id = uuidv4();
-
-    const product = await this.productRepository.create({
-      id,
-      ...createProductDto,
-    });
+    const product = await this.productRepository.create(createProductDto);
 
     return this.productRepository.save(product);
   }

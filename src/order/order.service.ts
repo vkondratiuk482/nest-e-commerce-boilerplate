@@ -53,7 +53,6 @@ export class OrderService {
   }
 
   async create(createOrderDto: CreateOrderDto) {
-    const id = uuidv4();
     const products = await this.productService.findManyByIds(
       createOrderDto.products,
     );
@@ -61,7 +60,6 @@ export class OrderService {
     const user = await this.userService.findOne(createOrderDto.userId);
 
     const order = await this.orderRepository.create({
-      id,
       ...createOrderDto,
       products,
       price,
