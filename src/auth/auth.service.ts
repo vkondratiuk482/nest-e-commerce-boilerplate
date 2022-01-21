@@ -1,6 +1,4 @@
 import {
-  HttpException,
-  HttpStatus,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -35,12 +33,7 @@ export class AuthService {
   async registration(userDto: CreateUserDto) {
     const candidate = await this.userService.findOneByEmail(userDto.email);
 
-    if (candidate) {
-      throw new HttpException(
-        'User with this email already exists',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    if (candidate) return null;
 
     const hashedPassword = await bcrypt.hash(userDto.password, 7);
     const user = await this.userService.create({
