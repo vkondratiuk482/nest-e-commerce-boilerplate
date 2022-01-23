@@ -29,6 +29,9 @@ $ npm install
 # start docker containers
 $ docker-compose up
 
+# migrations for default data
+$ npx typeorm migration:run
+
 # development
 $ npm run start
 
