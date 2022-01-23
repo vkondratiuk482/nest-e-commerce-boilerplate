@@ -21,16 +21,13 @@ export class OrderService {
   ) {}
 
   async findAll() {
-    const orders = await this.orderRepository.find({
-      relations: ['products', 'user'],
-    });
+    const orders = await this.orderRepository.find();
 
     return orders;
   }
 
   async findAllByUserId(id: string) {
     const orders = await this.orderRepository.find({
-      relations: ['products', 'user'],
       where: {
         user: id,
       },
@@ -44,9 +41,7 @@ export class OrderService {
   }
 
   async findOne(id: string) {
-    const order = await this.orderRepository.findOne(id, {
-      relations: ['products', 'user'],
-    });
+    const order = await this.orderRepository.findOne(id);
 
     if (!order) {
       throw new NotFoundException(`Order under this id doesn't exist`);
