@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { Order } from '../../order/order.entity';
-import { Role } from '../../role/role.entity';
+import { Order } from '../../order/entities/order.entity';
+import { Role } from '../../role/entities/role.entity';
 
 @Entity()
 export class User {

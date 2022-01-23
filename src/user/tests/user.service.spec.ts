@@ -5,7 +5,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
 
 import { User } from '../entities/user.entity';
-import { Role } from 'src/role/role.entity';
+import { Role } from 'src/role/entities/role.entity';
 
 import { UserService } from '../user.service';
 import { RoleService } from 'src/role/role.service';

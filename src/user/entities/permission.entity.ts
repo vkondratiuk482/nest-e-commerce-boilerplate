@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Role } from '../../role/role.entity';
+import { Role } from '../../role/entities/role.entity';
 
 @Entity()
 export class Permission {
