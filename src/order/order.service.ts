@@ -10,6 +10,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 
 import { UserService } from '../user/user.service';
 import { ProductService } from '../product/product.service';
+import { Status } from './enums/status.enum';
 
 @Injectable()
 export class OrderService {
@@ -56,12 +57,14 @@ export class OrderService {
     );
     const price = products.reduce((sum, current) => sum + +current.price, 0);
     const user = await this.userService.findOne(createOrderDto.userId);
+    const status = Status.NEEDS_CONFIRMATION;
 
     const order = await this.orderRepository.create({
       ...createOrderDto,
       products,
       price,
       user,
+      status,
     });
 
     return this.orderRepository.save(order);

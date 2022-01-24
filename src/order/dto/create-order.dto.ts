@@ -10,9 +10,6 @@ export class CreateOrderDto {
   @IsString({ each: true })
   readonly products: string[];
 
-  @IsString()
-  readonly status: string;
-
   @IsOptional()
   @IsString()
   userId?: string;
