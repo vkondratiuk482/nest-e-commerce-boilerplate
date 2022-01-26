@@ -12,10 +12,11 @@ import { AuthModule } from 'src/auth/auth.module';
 import { OrderController } from './order.controller';
 
 import { OrderService } from './order.service';
+import { OrdersProducts } from './entities/orders-products.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Order]),
+    TypeOrmModule.forFeature([Order, OrdersProducts]),
     ProductModule,
     UserModule,
     TokenModule,

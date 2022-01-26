@@ -1,6 +1,6 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Order } from '../../order/entities/order.entity';
+import { OrdersProducts } from 'src/order/entities/orders-products.entity';
 
 @Entity()
 export class Product {
@@ -34,6 +34,9 @@ export class Product {
   @Column({ length: 50 })
   category: string;
 
-  @ManyToMany(() => Order, (order: Order) => order.products)
-  orders: Order[];
+  @OneToMany(
+    () => OrdersProducts,
+    (OrdersProducts: OrdersProducts) => OrdersProducts.product,
+  )
+  OrdersProductss: OrdersProducts[];
 }

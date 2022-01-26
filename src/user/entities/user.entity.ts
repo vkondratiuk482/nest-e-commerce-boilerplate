@@ -27,7 +27,7 @@ export class User {
   @Column({ length: 60 })
   password: string;
 
-  @Column({ length: 10 })
+  @Column({ length: 16 })
   phoneNumber: string;
 
   @Column({ nullable: true })

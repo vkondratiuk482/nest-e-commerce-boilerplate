@@ -1,6 +1,15 @@
-import { IsString, IsOptional, IsEnum } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  ArrayMinSize,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
 
 import { Status } from '../enums/status.enum';
+import { ProductDto } from './create-order.dto';
 
 export class UpdateOrderDto {
   @IsOptional()
@@ -11,9 +20,11 @@ export class UpdateOrderDto {
   @IsString()
   readonly date: string;
 
-  @IsOptional()
-  @IsString({ each: true })
-  readonly products: string[];
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @Type(() => ProductDto)
+  readonly products: ProductDto[];
 
   @IsOptional()
   @IsEnum(Status)
