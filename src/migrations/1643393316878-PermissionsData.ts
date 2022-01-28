@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 
-export class PermissionsData1638403096157 implements MigrationInterface {
+export class PermissionsData1643393316878 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `INSERT INTO Permission VALUES('${uuidv4()}', 'CREATE_ORDER_SELF', 'create an order')`,
