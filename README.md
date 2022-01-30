@@ -23,6 +23,18 @@ The idea of this project was to build fully functional Ecommerce platform
 $ npm install
 ```
 
+## Example of .env file
+```bash
+DB_NAME=postgres
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASS=pass123
+JWT_ACCESS_SECRET=ACCESS_SECRET
+JWT_REFRESH_SECRET=REFRESH_SECRET
+STRIPE_API_KEY=STRIPE_KEY
+```
+
 ## Running the app
 
 ```bash
