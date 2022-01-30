@@ -8,6 +8,7 @@ import { ProductModule } from './product/product.module';
 import { RoleModule } from './role/role.module';
 import { AuthModule } from './auth/auth.module';
 import { TokenModule } from './token/token.module';
+import { StripeModule } from 'nestjs-stripe';
 
 @Module({
   imports: [
@@ -21,6 +22,10 @@ import { TokenModule } from './token/token.module';
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: false,
+    }),
+    StripeModule.forRoot({
+      apiKey: process.env.STRIPE_API_KEY,
+      apiVersion: '2020-08-27',
     }),
     UserModule,
     OrderModule,

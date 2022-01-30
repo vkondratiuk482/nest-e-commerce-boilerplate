@@ -1,18 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
+import Stripe from 'stripe';
 import { Repository } from 'typeorm';
 
 import { Status } from './enums/status.enum';
 
-import { OrdersProducts } from './entities/orders-products.entity';
 import { Order } from './entities/order.entity';
+import { OrdersProducts } from './entities/orders-products.entity';
 
 import { CreateOrderDto, ProductDto } from '../order/dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 
-import { UserService } from '../user/user.service';
 import { ProductService } from '../product/product.service';
+import { UserService } from '../user/user.service';
+import { InjectStripe } from 'nestjs-stripe';
 
 @Injectable()
 export class OrderService {
@@ -21,6 +23,7 @@ export class OrderService {
     private readonly orderRepository: Repository<Order>,
     @InjectRepository(OrdersProducts)
     private readonly ordersProductsRepository: Repository<OrdersProducts>,
+    @InjectStripe() private readonly stripeClient: Stripe,
     private readonly productService: ProductService,
     private readonly userService: UserService,
   ) {}
@@ -80,6 +83,19 @@ export class OrderService {
     await this.ordersProductsRepository.save(ordersProducts);
 
     return savedOrder;
+  }
+
+  async createPaymentSession() {
+    const session = await this.stripeClient.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      success_url: 'http://localhost:3000/success',
+      cancel_url: 'http://localhost:3000/cancel',
+    });
+
+    const sessionUrlObject = { url: session.url };
+
+    return sessionUrlObject;
   }
 
   async update(id: string, updateOrderDto: UpdateOrderDto) {
