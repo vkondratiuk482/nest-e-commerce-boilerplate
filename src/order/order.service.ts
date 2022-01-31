@@ -58,37 +58,36 @@ export class OrderService {
     return order;
   }
 
-  async create(createOrderDto: CreateOrderDto) {
-    const user = await this.userService.findOne(createOrderDto.userId);
-    const { products, price, productsMap } =
-      await this.getProductsAndTheirPrice(createOrderDto.products);
-
+  async create(userId: string, createOrderDto: CreateOrderDto) {
+    const { products } = createOrderDto;
     const status = Status.NEEDS_CONFIRMATION;
+
+    const price = await this.getTotalPrice(products);
+    const userExists = await this.userService.findOne(userId);
 
     const order = await this.orderRepository.create({
       ...createOrderDto,
-      price,
-      user,
+      userId,
       status,
+      price,
     });
 
     const savedOrder = await this.orderRepository.save(order);
 
     const ordersProducts = products.map((product) => ({
-      order,
-      product,
-      quantity: productsMap.get(product.id),
+      orderId: savedOrder.id,
+      productId: product.id,
+      quantity: product.quantity,
     }));
 
-    await this.ordersProductsRepository.save(ordersProducts);
-
-    return savedOrder;
+    return this.ordersProductsRepository.save(ordersProducts);
   }
 
-  async createPaymentSession() {
+  async createPaymentSession(items: any) {
     const session = await this.stripeClient.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
+      line_items: items,
       success_url: 'http://localhost:3000/success',
       cancel_url: 'http://localhost:3000/cancel',
     });
@@ -99,33 +98,16 @@ export class OrderService {
   }
 
   async update(id: string, updateOrderDto: UpdateOrderDto) {
-    const { products, price, productsMap } =
-      updateOrderDto.products &&
-      (await this.getProductsAndTheirPrice(updateOrderDto.products));
-
     const order = await this.orderRepository.preload({
       id,
       ...updateOrderDto,
-      price,
     });
 
     if (!order) {
       throw new NotFoundException(`There is no order under id ${id}`);
     }
 
-    const savedOrder = await this.orderRepository.save(order);
-
-    if (updateOrderDto.products) {
-      const ordersProducts = products.map((product) => ({
-        order,
-        product,
-        quantity: productsMap.get(product.id),
-      }));
-
-      return this.ordersProductsRepository.save(ordersProducts);
-    }
-
-    return savedOrder;
+    return this.orderRepository.save(order);
   }
 
   async remove(id: string) {
@@ -134,7 +116,7 @@ export class OrderService {
     return this.orderRepository.remove(order);
   }
 
-  private async getProductsAndTheirPrice(productsDto: Array<ProductDto>) {
+  private async getTotalPrice(productsDto: Array<ProductDto>) {
     const productsMap = new Map<string, number>(); //productId -> quantity
     const productsIds = productsDto.map((current) => current.id);
 
@@ -151,6 +133,6 @@ export class OrderService {
       0,
     );
 
-    return { products, price, productsMap };
+    return price;
   }
 }

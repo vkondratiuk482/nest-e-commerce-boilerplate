@@ -38,5 +38,5 @@ export class Product {
     () => OrdersProducts,
     (OrdersProducts: OrdersProducts) => OrdersProducts.product,
   )
-  OrdersProductss: OrdersProducts[];
+  OrdersProducts: OrdersProducts[];
 }

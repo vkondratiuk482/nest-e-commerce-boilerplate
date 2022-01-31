@@ -51,12 +51,12 @@ export class OrderController {
   @UseGuards(PermissionGuard)
   @Post()
   async create(@Req() req: Request, @Body() createOrderDto: CreateOrderDto) {
-    const { id } = await this.authService.parseAuthorizationHeaders(
+    const payload = await this.authService.parseAuthorizationHeaders(
       req.headers.authorization,
     );
-    createOrderDto.userId = id;
+    const userId = payload.id;
 
-    return this.orderService.create(createOrderDto);
+    return this.orderService.create(userId, createOrderDto);
   }
 
   @Permission('UPDATE_ORDER_ALL')

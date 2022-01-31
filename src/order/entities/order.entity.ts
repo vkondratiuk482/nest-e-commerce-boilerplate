@@ -32,9 +32,12 @@ export class Order {
   @ManyToOne(() => User, (user: User) => user.orders)
   user: User;
 
+  @Column()
+  userId: string;
+
   @OneToMany(
     () => OrdersProducts,
     (OrdersProducts: OrdersProducts) => OrdersProducts.order,
   )
-  OrdersProductss: OrdersProducts[];
+  OrdersProducts: OrdersProducts[];
 }
