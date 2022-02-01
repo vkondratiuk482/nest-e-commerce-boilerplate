@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { Status } from './enums/status.enum';
 
 import { Order } from './entities/order.entity';
+import { Product } from 'src/product/enities/product.entity';
 import { OrdersProducts } from './entities/orders-products.entity';
 
 import { CreateOrderDto, ProductDto } from '../order/dto/create-order.dto';
@@ -59,11 +60,23 @@ export class OrderService {
   }
 
   async create(userId: string, createOrderDto: CreateOrderDto) {
-    const { products } = createOrderDto;
     const status = Status.NEEDS_CONFIRMATION;
+    const productsDto = createOrderDto.products;
 
-    const price = await this.getTotalPrice(products);
     const userExists = await this.userService.findOne(userId);
+
+    const productsIds = productsDto.map((current) => current.id);
+    const productsMap = new Map<string, number>(); //productId -> quantity
+
+    const products = await this.productService.findManyByIds(productsIds);
+
+    for (const product of productsDto) {
+      const { id, quantity } = product;
+
+      productsMap.set(id, quantity);
+    }
+
+    const price = await this.getTotalPrice(products, productsMap);
 
     const order = await this.orderRepository.create({
       ...createOrderDto,
@@ -77,10 +90,23 @@ export class OrderService {
     const ordersProducts = products.map((product) => ({
       orderId: savedOrder.id,
       productId: product.id,
-      quantity: product.quantity,
+      quantity: productsMap.get(product.id),
     }));
 
-    return this.ordersProductsRepository.save(ordersProducts);
+    const paymentItems = products.map((product) => ({
+      price_data: {
+        currency: 'usd',
+        product_data: {
+          name: product.name,
+        },
+        unit_amount: product.price * 100,
+      },
+      quantity: productsMap.get(product.id),
+    }));
+
+    await this.ordersProductsRepository.save(ordersProducts);
+
+    return this.createPaymentSession(paymentItems);
   }
 
   async createPaymentSession(items: any) {
@@ -92,7 +118,7 @@ export class OrderService {
       cancel_url: 'http://localhost:3000/cancel',
     });
 
-    const sessionUrlObject = { url: session.url };
+    const sessionUrlObject = { url: session.url, id: session.id };
 
     return sessionUrlObject;
   }
@@ -116,18 +142,10 @@ export class OrderService {
     return this.orderRepository.remove(order);
   }
 
-  private async getTotalPrice(productsDto: Array<ProductDto>) {
-    const productsMap = new Map<string, number>(); //productId -> quantity
-    const productsIds = productsDto.map((current) => current.id);
-
-    for (const product of productsDto) {
-      const { id, quantity } = product;
-
-      productsMap.set(id, quantity);
-    }
-
-    const products = await this.productService.findManyByIds(productsIds);
-
+  private async getTotalPrice(
+    products: Array<Product>,
+    productsMap: Map<string, number>,
+  ) {
     const price = products.reduce(
       (sum, current) => sum + +current.price * productsMap.get(current.id),
       0,
