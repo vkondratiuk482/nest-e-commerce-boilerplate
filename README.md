@@ -34,8 +34,8 @@ DB_PASS=pass123
 JWT_ACCESS_SECRET=ACCESS_SECRET
 JWT_REFRESH_SECRET=REFRESH_SECRET
 STRIPE_API_KEY=STRIPE_KEY
-PAYMENT_SUCCESS_URL=http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}
-PAYMENT_CANCEL_URL=http://localhost:3000/cancel
+PAYMENT_SUCCESS_URL=http://localhost:3000/order/success?session_id={CHECKOUT_SESSION_ID}
+PAYMENT_CANCEL_URL=http://localhost:3000/order/cancel
 ```
 
 ## Running the app
