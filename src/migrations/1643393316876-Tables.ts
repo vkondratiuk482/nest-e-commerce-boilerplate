@@ -17,10 +17,10 @@ export class Tables1643393316876 implements MigrationInterface {
       `CREATE TABLE "product" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying(50) NOT NULL, "vendorCode" character varying(50) NOT NULL, "weight" character varying(10) NOT NULL, "price" numeric(8,2) NOT NULL, "photo" character varying NOT NULL, "description" character varying(255) NOT NULL, "size" character varying NOT NULL, "category" character varying(50) NOT NULL, CONSTRAINT "PK_bebc9158e480b949565b4dc7a82" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "orders_products" ("quantity" integer NOT NULL, "orderId" uuid NOT NULL, "productId" uuid NOT NULL, CONSTRAINT "PK_c58c7b27012def143c3fab1b6f4" PRIMARY KEY ("orderId", "productId"))`,
+      `CREATE TABLE "orders_products" ("orderId" uuid NOT NULL, "productId" uuid NOT NULL, "quantity" integer NOT NULL, CONSTRAINT "PK_c58c7b27012def143c3fab1b6f4" PRIMARY KEY ("orderId", "productId"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "order" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "adress" character varying(50) NOT NULL, "price" numeric(8,2) NOT NULL, "date" character varying(25) NOT NULL, "status" character varying(50) NOT NULL, "userId" uuid, CONSTRAINT "PK_1031171c13130102495201e3e20" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "order" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "adress" character varying(50) NOT NULL, "price" numeric(8,2) NOT NULL, "date" character varying(25) NOT NULL, "status" character varying(50) NOT NULL, "stripeId" character varying, "userId" uuid NOT NULL, CONSTRAINT "PK_1031171c13130102495201e3e20" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "role_permissions_permission" ("roleId" uuid NOT NULL, "permissionId" uuid NOT NULL, CONSTRAINT "PK_b817d7eca3b85f22130861259dd" PRIMARY KEY ("roleId", "permissionId"))`,

@@ -12,7 +12,7 @@ export class OrdersProducts {
   @JoinColumn({ name: 'orderId' })
   order: Order;
 
-  @Column()
+  @PrimaryColumn()
   productId: string;
 
   @ManyToOne((type) => Product, (product) => product.OrdersProducts)
