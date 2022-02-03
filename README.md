@@ -16,6 +16,7 @@ The idea of this project was to build fully functional Ecommerce platform
 - JWT auth
 - Roles, Permissions
 - Orders, Products
+- Stripe payment
 
 ## Installation
 
