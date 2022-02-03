@@ -59,6 +59,18 @@ export class OrderService {
     return order;
   }
 
+  async findOneByStripeSessionId(stripeId: string) {
+    const order = await this.orderRepository.findOne({ stripeId });
+
+    if (!order) {
+      throw new NotFoundException(
+        `Order under this stripe session id doesn't exist`,
+      );
+    }
+
+    return order;
+  }
+
   async create(userId: string, createOrderDto: CreateOrderDto) {
     const status = Status.NEEDS_CONFIRMATION;
     const productsDto = createOrderDto.products;
@@ -93,6 +105,14 @@ export class OrderService {
     await this.ordersProductsRepository.save(ordersProducts);
 
     return session.url;
+  }
+
+  async onPaymentSuccess(stripeId: string) {
+    const order = await this.findOneByStripeSessionId(stripeId);
+
+    const orderStatusObject = { status: Status.IN_PROGRESS };
+
+    return this.update(order.id, orderStatusObject);
   }
 
   async update(id: string, updateOrderDto: UpdateOrderDto) {

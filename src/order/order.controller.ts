@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -14,6 +15,7 @@ import { Request } from 'express';
 
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { OnPaymentSuccessQuery } from './dto/on-payment-success.dto';
 
 import { Permission } from 'src/role/decorators/permission.decorator';
 
@@ -28,6 +30,16 @@ export class OrderController {
     private readonly orderService: OrderService,
     private readonly authService: AuthService,
   ) {}
+
+  @Get('/success')
+  async onPaymentSuccess(@Query() queryParams: OnPaymentSuccessQuery) {
+    return this.orderService.onPaymentSuccess(queryParams.session_id);
+  }
+
+  @Get('/cancel')
+  async onPaymentCanceled() {
+    return 'Your payment has been canceled!';
+  }
 
   @Permission('GET_ORDER_ALL')
   @UseGuards(PermissionGuard)

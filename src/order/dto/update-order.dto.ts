@@ -5,13 +5,13 @@ import { Status } from '../enums/status.enum';
 export class UpdateOrderDto {
   @IsOptional()
   @IsString()
-  readonly adress: string;
+  readonly adress?: string;
 
   @IsOptional()
   @IsString()
-  readonly date: string;
+  readonly date?: string;
 
   @IsOptional()
   @IsEnum(Status)
-  readonly status: string;
+  readonly status?: string;
 }
