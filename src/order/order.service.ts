@@ -78,21 +78,6 @@ export class OrderService {
 
     const price = await this.getTotalPrice(products, productsMap);
 
-    const order = await this.orderRepository.create({
-      ...createOrderDto,
-      userId,
-      status,
-      price,
-    });
-
-    const savedOrder = await this.orderRepository.save(order);
-
-    const ordersProducts = products.map((product) => ({
-      orderId: savedOrder.id,
-      productId: product.id,
-      quantity: productsMap.get(product.id),
-    }));
-
     const paymentItems = products.map((product) => ({
       price_data: {
         currency: 'usd',
@@ -104,9 +89,27 @@ export class OrderService {
       quantity: productsMap.get(product.id),
     }));
 
+    const sessionObject = await this.createPaymentSession(paymentItems);
+
+    const order = await this.orderRepository.create({
+      ...createOrderDto,
+      userId,
+      status,
+      price,
+      stripeId: sessionObject.id,
+    });
+
+    const savedOrder = await this.orderRepository.save(order);
+
+    const ordersProducts = products.map((product) => ({
+      orderId: savedOrder.id,
+      productId: product.id,
+      quantity: productsMap.get(product.id),
+    }));
+
     await this.ordersProductsRepository.save(ordersProducts);
 
-    return this.createPaymentSession(paymentItems);
+    return sessionObject.url;
   }
 
   async createPaymentSession(items: any) {
@@ -114,7 +117,8 @@ export class OrderService {
       payment_method_types: ['card'],
       mode: 'payment',
       line_items: items,
-      success_url: 'http://localhost:3000/success',
+      success_url:
+        'http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'http://localhost:3000/cancel',
     });
 
