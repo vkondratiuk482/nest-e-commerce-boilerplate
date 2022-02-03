@@ -29,12 +29,18 @@ export class Order {
   @Column({ length: 50 })
   status: string;
 
+  @Column({ nullable: true })
+  stripeId: string;
+
   @ManyToOne(() => User, (user: User) => user.orders)
   user: User;
+
+  @Column()
+  userId: string;
 
   @OneToMany(
     () => OrdersProducts,
     (OrdersProducts: OrdersProducts) => OrdersProducts.order,
   )
-  OrdersProductss: OrdersProducts[];
+  OrdersProducts: OrdersProducts[];
 }

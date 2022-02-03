@@ -4,7 +4,6 @@ import {
   IsArray,
   IsInt,
   IsNumber,
-  IsOptional,
   IsString,
   IsUUID,
   Min,
@@ -33,8 +32,4 @@ export class CreateOrderDto {
   @ValidateNested({ each: true })
   @Type(() => ProductDto)
   readonly products: ProductDto[];
-
-  @IsOptional()
-  @IsString()
-  userId?: string;
 }
