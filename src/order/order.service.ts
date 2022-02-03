@@ -66,37 +66,20 @@ export class OrderService {
     const userExists = await this.userService.findOne(userId);
 
     const productsIds = productsDto.map((current) => current.id);
-    const productsMap = new Map<string, number>(); //productId -> quantity
+    const productsMap = this.createProductQuantityMap(productsDto);
 
     const products = await this.productService.findManyByIds(productsIds);
-
-    for (const product of productsDto) {
-      const { id, quantity } = product;
-
-      productsMap.set(id, quantity);
-    }
-
     const price = await this.getTotalPrice(products, productsMap);
 
-    const paymentItems = products.map((product) => ({
-      price_data: {
-        currency: 'usd',
-        product_data: {
-          name: product.name,
-        },
-        unit_amount: product.price * 100,
-      },
-      quantity: productsMap.get(product.id),
-    }));
-
-    const sessionObject = await this.createPaymentSession(paymentItems);
+    const paymentItems = this.createPaymentItems(products, productsMap);
+    const session = await this.createPaymentSession(paymentItems);
 
     const order = await this.orderRepository.create({
       ...createOrderDto,
       userId,
       status,
       price,
-      stripeId: sessionObject.id,
+      stripeId: session.id,
     });
 
     const savedOrder = await this.orderRepository.save(order);
@@ -109,22 +92,7 @@ export class OrderService {
 
     await this.ordersProductsRepository.save(ordersProducts);
 
-    return sessionObject.url;
-  }
-
-  async createPaymentSession(items: any) {
-    const session = await this.stripeClient.checkout.sessions.create({
-      payment_method_types: ['card'],
-      mode: 'payment',
-      line_items: items,
-      success_url:
-        'http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: 'http://localhost:3000/cancel',
-    });
-
-    const sessionUrlObject = { url: session.url, id: session.id };
-
-    return sessionUrlObject;
+    return session.url;
   }
 
   async update(id: string, updateOrderDto: UpdateOrderDto) {
@@ -156,5 +124,49 @@ export class OrderService {
     );
 
     return price;
+  }
+
+  private async createPaymentSession(items) {
+    const session = await this.stripeClient.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items: items,
+      success_url: process.env.PAYMENT_SUCCESS_URL,
+      cancel_url: process.env.PAYMENT_CANCEL_URL,
+    });
+
+    const sessionData = { url: session.url, id: session.id };
+
+    return sessionData;
+  }
+
+  private createProductQuantityMap(productsDto: Array<ProductDto>) {
+    const productsMap = new Map<string, number>(); //productId -> quantity
+
+    for (const product of productsDto) {
+      const { id, quantity } = product;
+
+      productsMap.set(id, quantity);
+    }
+
+    return productsMap;
+  }
+
+  private createPaymentItems(
+    products: Array<Product>,
+    productsMap: Map<string, number>,
+  ) {
+    const paymentItems = products.map((product) => ({
+      price_data: {
+        currency: 'usd',
+        product_data: {
+          name: product.name,
+        },
+        unit_amount: product.price * 100,
+      },
+      quantity: productsMap.get(product.id),
+    }));
+
+    return paymentItems;
   }
 }
