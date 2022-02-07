@@ -6,9 +6,49 @@ import { Connection, Repository } from 'typeorm';
 
 import { User } from '../entities/user.entity';
 import { Role } from 'src/role/entities/role.entity';
+import { CreateUserDto } from '../dto/create-user.dto';
 
 import { UserService } from '../user.service';
 import { RoleService } from 'src/role/role.service';
+
+const createUserDto: CreateUserDto = {
+  name: 'Andrew',
+  surname: 'Reus',
+  email: 'andrewreus@gmail.com',
+  password: 'andrewthebest',
+  phoneNumber: '380670000000',
+  roleName: 'user',
+};
+
+const user1 = {
+  id: 'first user id',
+  name: 'Josh',
+  surname: 'Wayne',
+  email: 'joshwayne@gmail.com',
+  password: 'josh2000',
+  phoneNumber: '380681111111',
+  refreshToken: 'first user refresh token',
+  role: {
+    id: 'role id',
+    name: 'admin',
+  },
+};
+
+const user2 = {
+  id: 'second user id',
+  name: 'Alex',
+  surname: 'Messi',
+  email: 'alexmessi@gmail.com',
+  password: 'alexcool',
+  phoneNumber: '380682222222',
+  refreshToken: 'second user refresh token',
+  role: {
+    id: 'role id',
+    name: 'user',
+  },
+};
+
+const users = [user1, user2];
 
 describe('UserService', () => {
   let service: UserService;
@@ -19,8 +59,8 @@ describe('UserService', () => {
     Record<keyof Repository<T>, jest.Mock>
   >;
   const createMockRepository = <T = any>(): MockRepository => ({
-    findOne: jest.fn(),
-    find: jest.fn(),
+    findOne: jest.fn().mockReturnValue(user1),
+    find: jest.fn().mockReturnValue(users),
     preload: jest.fn().mockImplementation((dto) => dto),
     create: jest.fn().mockImplementation((dto) => dto),
     save: jest.fn().mockImplementation((user) => ({
@@ -53,31 +93,25 @@ describe('UserService', () => {
 
   describe('findAll', () => {
     it('returns all users', async () => {
-      const expectedUsers = {};
+      const result = await service.findAll();
 
-      userRepository.find.mockReturnValue(expectedUsers);
-      const users = await service.findAll();
-
-      expect(users).toEqual(expectedUsers);
+      expect(result).toEqual(users);
     });
   });
 
   describe('findOne', () => {
     describe('user with this ID exists', () => {
       it('returns user object', async () => {
-        const userId = '3c5e83f6-d443-4981-9b86asdasd';
-        const expectedUser = {};
+        const user = await service.findOne('first user id');
 
-        userRepository.findOne.mockReturnValue(expectedUser);
-        const user = await service.findOne(userId);
-
-        expect(user).toEqual(expectedUser);
+        expect(user).toEqual(user1);
       });
     });
 
     describe('user with this ID doesnt exist', () => {
       it('throws NotFoundException', async () => {
-        const userId = '3c5e83f6-d443-4981-9b86-baaf05af1ff6';
+        const userId = 'third user id';
+
         userRepository.findOne.mockReturnValue(undefined);
 
         try {
@@ -93,95 +127,66 @@ describe('UserService', () => {
   describe('findOneByEmail', () => {
     describe('user with this email exists', () => {
       it('returns user object', async () => {
-        const email = 'zxc123@gmail.com';
-        const expectedUser = {};
+        const user = await service.findOneByEmail('joshwayne@gmail.com');
 
-        userRepository.findOne.mockReturnValue(expectedUser);
-        const user = await service.findOneByEmail(email);
-
-        expect(user).toEqual(expectedUser);
+        expect(user).toEqual(user1);
       });
     });
   });
 
   describe('create', () => {
     it('creates a user', async () => {
-      roleRepository.findOne.mockReturnValue({
-        id: '87c40994-ebf5-4188-8814-1c03c013b9b3',
-        name: 'admin',
-      });
-
-      const userDto = {
-        name: 'Zxc',
-        surname: 'Asd',
-        email: 'zxc@gmail.com',
-        password: 'zxc123',
-        phoneNumber: '1234567',
-        roleName: 'admin',
+      const expected = {
+        ...createUserDto,
+        role: { id: expect.any(String), name: createUserDto.roleName },
+        id: expect.any(String),
       };
 
-      const user = await service.create(userDto);
-
-      expect({
-        ...user,
-      }).toEqual({
-        ...userDto,
-        role: { id: expect.any(String), name: userDto.roleName },
-        id: expect.any(String),
+      roleRepository.findOne.mockReturnValue({
+        id: 'user role id',
+        name: 'user',
       });
+
+      const user = await service.create(createUserDto);
+
+      expect(user).toEqual(expected);
     });
   });
 
   describe('update', () => {
     describe('user and the role exist', () => {
       it('updates user', async () => {
+        const expected = {
+          ...createUserDto,
+          role: { id: expect.any(String), name: createUserDto.roleName },
+          id: expect.any(String),
+        };
+
         roleRepository.findOne.mockReturnValue({
-          id: '87c40994-ebf5-4188-8814-1c03c013b9b3',
+          id: 'user role id',
           name: 'user',
         });
 
-        const id = '1238sa-1fnu21d21-sfasdjq-asdhd1';
-        const userDto = {
-          name: 'Zxc',
-          surname: 'Asd',
-          email: 'zxc@gmail.com',
-          password: 'zxc123',
-          phoneNumber: '1234567',
-          roleName: 'user',
-        };
+        const id = 'second user id';
 
-        const user = await service.update(id, userDto);
+        const user = await service.update(id, createUserDto);
 
-        expect({
-          ...user,
-        }).toEqual({
-          ...userDto,
-          role: { id: expect.any(String), name: userDto.roleName },
-          id: expect.any(String),
-        });
+        expect(user).toEqual(expected);
       });
     });
 
     describe('user exists but the role doesnt exist', () => {
       it('throws NotFoundException', async () => {
+        const id = 'second user id';
+
         roleRepository.findOne.mockReturnValue(undefined);
 
-        const id = '1238sa-1fnu21d21-sfasdjq-asdhd1';
-        const userDto = {
-          name: 'Zxc',
-          surname: 'Asd',
-          email: 'zxc@gmail.com',
-          password: 'zxc123',
-          phoneNumber: '1234567',
-          roleName: 'user',
-        };
-
         try {
-          const user = await service.update(id, userDto);
+          const user = await service.update(id, createUserDto);
         } catch (err) {
           expect(err).toBeInstanceOf(NotFoundException);
           expect(err.message).toEqual(
-            `There is no role under this name ${userDto.roleName}`,
+            `There is no role under this name ${createUserDto.roleName}`,
           );
         }
       });
@@ -189,24 +194,17 @@ describe('UserService', () => {
 
     describe('user doesnt exist', () => {
       it('throws NotFoundException', async () => {
+        const id = 'third user id';
+
         roleRepository.findOne.mockReturnValue({
           id: '87c40994-ebf5-4188-8814-1c03c013b9b3',
           name: 'user',
         });
+
         userRepository.preload.mockReturnValue(undefined);
 
-        const id = '1238sa-1fnu21d21-sfasdjq-asdhd1';
-        const userDto = {
-          name: 'Zxc',
-          surname: 'Asd',
-          email: 'zxc@gmail.com',
-          password: 'zxc123',
-          phoneNumber: '1234567',
-          roleName: 'user',
-        };
-
         try {
-          const user = await service.update(id, userDto);
+          const user = await service.update(id, createUserDto);
         } catch (err) {
           expect(err).toBeInstanceOf(NotFoundException);
           expect(err.message).toEqual(`There is no user under id ${id}`);
@@ -218,19 +216,19 @@ describe('UserService', () => {
   describe('delete', () => {
     describe('user exists', () => {
       it('deletes user', async () => {
-        const id = 'jdu12bf12-1fnu01m2-fmxal218d-f02ks1id';
+        const id = 'second user id';
 
-        userRepository.findOne.mockReturnValue({});
+        userRepository.findOne.mockReturnValue(user2);
 
         const deletedUser = await service.remove(id);
 
-        expect(deletedUser).toEqual({});
+        expect(deletedUser).toEqual(user2);
       });
     });
 
     describe('user doesnt exist', () => {
       it('throws NotFoundException', async () => {
-        const id = 'jdu12bf12-1fnu01m2-fmxal218d-f02ks1id';
+        const id = 'third user id';
 
         userRepository.findOne.mockReturnValue(undefined);
 
